@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RemoteDataSource {
+class RemoteDataSource {
     private val url = "http://careers.picpay.com/tests/mobdev/"
 
     private val gson: Gson by lazy { GsonBuilder().create() }
