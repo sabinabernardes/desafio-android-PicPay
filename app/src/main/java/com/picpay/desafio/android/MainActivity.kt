@@ -1,15 +1,23 @@
 package com.picpay.desafio.android
 
+import android.content.ContentValues
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.picpay.desafio.android.data.service.PicPayService
 import com.picpay.desafio.android.data.model.User
+import com.picpay.desafio.android.data.repository.UserRepository
+import com.picpay.desafio.android.data.repository.UserRepositoryImplementation
+import com.picpay.desafio.android.results.ResultUsers
+import com.picpay.desafio.android.viewmodel.UserViewModel
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,27 +31,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private lateinit var progressBar: ProgressBar
     private lateinit var adapter: UserListAdapter
 
-    private val url = "http://careers.picpay.com/tests/mobdev/"
-
-    private val gson: Gson by lazy { GsonBuilder().create() }
-
-    private val okHttp: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .build()
-    }
-
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(url)
-            .client(okHttp)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-    }
-
-    private val service: PicPayService by lazy {
-        retrofit.create(PicPayService::class.java)
-    }
-
     override fun onResume() {
         super.onResume()
 
@@ -55,23 +42,33 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         progressBar.visibility = View.VISIBLE
-        service.getUsers()
-            .enqueue(object : Callback<List<User>> {
-                override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                    val message = getString(R.string.error)
 
-                    progressBar.visibility = View.GONE
-                    recyclerView.visibility = View.GONE
+        val viewModel = ViewModelProvider(this,
+            UserViewModel.UserViewModelFactory(UserRepositoryImplementation())) //
+            .get(UserViewModel::class.java)
 
-                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT)
-                        .show()
+        viewModel.getUsersCoroutines()
+
+        viewModel.usersMutableLiveData.observe(this, Observer { users ->
+            users?.let {
+                adapter.notifyDataSetChanged()
+                when (it) {
+                    is ResultUsers.AddUsers -> addUsers(it.resultUserList)
+                    is ResultUsers.SetErroDispay-> setErroDispay()
+
                 }
+            }
+        })
+    }
+    private fun addUsers(usersAdd: List<User>) {
+        progressBar.visibility = View.GONE
+        adapter.users = usersAdd
+    }
+    private fun setErroDispay() {
+        progressBar.visibility = View.GONE
+        recyclerView.visibility = View.GONE
 
-                override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                    progressBar.visibility = View.GONE
-
-                    adapter.users = response.body()!!
-                }
-            })
+        Toast.makeText(this@MainActivity, getString(R.string.error), Toast.LENGTH_SHORT)
+            .show()
     }
 }

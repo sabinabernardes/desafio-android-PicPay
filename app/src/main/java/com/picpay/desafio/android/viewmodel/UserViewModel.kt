@@ -4,9 +4,10 @@ import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.picpay.desafio.android.data.model.User
 import com.picpay.desafio.android.data.repository.UserRepository
+import com.picpay.desafio.android.data.repository.UserRepositoryImplementation
 import com.picpay.desafio.android.results.ResultUsers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,17 +15,27 @@ import kotlinx.coroutines.launch
 class UserViewModel(private val repository: UserRepository) :ViewModel() {
 
     val usersMutableLiveData = MutableLiveData<ResultUsers>()
+
     fun getUsersCoroutines(){
         viewModelScope.launch(Dispatchers.Main)
         {
             try {
-                val result = repository.getUsers()
-                usersMutableLiveData.value = ResultUsers.AddUsers(result)
-                Log.e(ContentValues.TAG, "dentro VIEW MODEL retorno")
+                val response = repository.getUsersRemoteDataSource()
+                usersMutableLiveData.value = ResultUsers.AddUsers(response)
+
             }catch(exception:Exception){
-                usersMutableLiveData.value = ResultUsers.Error(error = true)
+                usersMutableLiveData.value = ResultUsers.SetErroDispay(error = true)
             }
         }
     }
+    class UserViewModelFactory(
+        private val repository: UserRepositoryImplementation
+    ):ViewModelProvider.Factory{
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return UserViewModel(repository) as T
+        }
+
+    }
+
 
 }
