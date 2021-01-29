@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.picpay.desafio.android.data.repository.UserRepository
 import com.picpay.desafio.android.data.repository.UserRepositoryImplementation
-import com.picpay.desafio.android.results.ResultUsers
+import com.picpay.desafio.android.data.results.ResultUsers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
