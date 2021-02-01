@@ -5,4 +5,26 @@
 ### As camadas serão configuradas conforme link abaixo da documentação do Android.
 https://developer.android.com/jetpack/guide
 
+![](https://github.com/sabinabernardes/desafio-android-PicPay/blob/main/mvvm.png)
+
+### 1-Organização das pastas 
+#### Movendo os arquivos existentes e criando novos packages para se enquadrar na arquitetura
+
+-> Classe User  foi para o package data/model
+-> Interface PicPayService foi para o package data/service
+
+##### OBS: Os outros items iriam para classe de view, porem durante os testes quando eu movia para o package view o aplicativo não inicializava.
+##### Pergunta: Há algum procedimento especial para fazer a transferência de arquivos para que esse erro não ocorra?
+
+### 2- Classe Remote Data Source
+#### Criada a classe RemoteDataSource no package data/service com o objetivo de retirar a chamada da api da MainActivity 
+
+### 3- Repository
+#### Camada Responsável na arquitetura MVVM por decidir de onde serão buscados os dados da aplicação. Como neste caso estamos trabalhando com a chamada da Api através da biblioteca do retrofit esses dados serão acessados pela Classe RemoteDataSource.
+
+### 3.1 - Interface UserRepository
+#### função getUserRemoteDataSource(Solicita os usuarios para a api ) do tipo Lista de Usuários 
+
+### 3.2 Classe UserRepositoryImplementation
+#### Classe que herda do UserRepository. E implementa a função getUserRemoteDataSource() utilizando o conceito de coroutines , ou seja , requerindo os usuarios da api em uma thread secundaria .
 
