@@ -2,7 +2,7 @@
 ## Ações abordadas para resolução do desafio.
 
 #### Com o objetivo de tornar o aplicativo mais escalável, organizado e testável foi escolhido o padrão de arquitetura MVVM. Permitindo desacoplar o código separando cada parte por suas responsabilidades.
-### As camadas serão configuradas conforme link abaixo da documentação do Android.
+#### As camadas serão configuradas conforme link abaixo da documentação do Android.
 https://developer.android.com/jetpack/guide
 
 ![](https://github.com/sabinabernardes/desafio-android-PicPay/blob/main/mvvm.png)
@@ -10,6 +10,7 @@ https://developer.android.com/jetpack/guide
 ### 1-Organização das pastas 
 #### Movendo os arquivos existentes e criando novos packages para se enquadrar na arquitetura
 
+#### Dos arquivos existentes foram feitas as mudanças de packages abaixo 
 ##### -> Classe User  foi para o package data/model
 ##### -> Interface PicPayService foi para o package data/service
 
@@ -66,10 +67,8 @@ interface UserRepository
 
 
 
-
-
 ### 3.2 Classe UserRepositoryImplementation
-#### Classe que herda do UserRepository. E implementa a função getUserRemoteDataSource() utilizando o conceito de coroutines , ou seja , requerindo os usuarios da api em uma thread secundaria .
+#### Classe que herda as caracteristicas do UserRepository. E implementa a função getUserRemoteDataSource() utilizando o conceito de coroutines , ou seja , requerindo os usuarios da api em uma thread secundaria .
 
 ```kotlin
 class UserRepositoryImplementation : UserRepository {
@@ -83,16 +82,18 @@ class UserRepositoryImplementation : UserRepository {
 ```
 #### Conceitos Utilizados :
 ##### 3.2.1 Coroutines:
-  São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
-   ##### 3.2.1.1 Pode substituir o Callback
-   ##### 3.2.1.2 Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
-   ##### 3.2.1.3 Gerenciamento de threads de background 
+  * São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
+  * Pode substituir o Callback
+  * Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
    
-##### 3.2.2 Dispatchers.IO:
-##### 3.2.3 Threads:
-##### 3.2.4 viewModelScope : escopo de coroutines na camada
+   
+##### 3.2.2 Dispatchers.IO: Indicação de Threads secundaria 
+
+
 
 #### Pergunta : O nome da função getUserRemoteDataSource seria um nome valído para um projeto , onde esse código seria revisado por outros , ou seja , seria um ideal , ou há outras maneiras de nomeação na hora da aplicação em projeto .
+
+##### Obs : Tive certa dificuldade em utilizar a metodologia do observaveis e callback, por isso decidi utilizar coroutines
 
 ### 3.3 PicPayService 
 #### Troca do tipo de retorno da função de Call<List<User>> para List<User> com o objetivo ce facilitar a leitura do usuarios no adapter .
@@ -101,7 +102,7 @@ class UserRepositoryImplementation : UserRepository {
  @GET("users")
     suspend fun getUsers(): List<User>
  ```
-##### Obs : Tive certa dificuldade em utilizar a metodologia do observais tanto no 
+
 
 ### 4 UserViewModel
 #### Fornece os dados para um componente de UI, como a MainActivity, e contém lógica de negócios de manipulação de dados para se comunicar com o repository
@@ -133,34 +134,19 @@ class UserRepositoryImplementation : UserRepository {
     }
    ``` 
 ### 4.1 Herda da classe ViewModel ()
+#### Trás as caracteristicas necessarias para funcionar como viewModel
 ``
 :ViewModel()
 ``
-### 4.2 MutableLiveData
+### 4.2 LiveData
+#### Dados que vao receber as informações da resposta da api ou do db e quando houver alterções enviam para o componente de view que estará observando o 
+#### Neste caso foi usado um MutableLiveData uma lista mutável que retornará o tipo ResultUsers 
  ```kotlin
  val usersMutableLiveData = MutableLiveData<ResultUsers>()
  ```
- 
-### 4.3 função coroutines
-```kotlin
-fun getUsersCoroutines(){
-        viewModelScope.launch(Dispatchers.Main)
-        {
-        
-```
-### 4.5 chamada do repository
+### 4.3 Classe ResultUsers
 
-### 4.7 try catch
- ```kotlin
- try {
-                val response = repository.getUsersRemoteDataSource()
-                usersMutableLiveData.value = ResultUsers.AddUsers(response)
-
-            }catch(exception:Exception){
-                usersMutableLiveData.value = ResultUsers.SetErroDispay(error = true)
-            }
-```
-### 4.8 Classe ResultUsers
+#### Classe selada 
 ```kotlin
 sealed class ResultUsers{
 
@@ -169,6 +155,24 @@ sealed class ResultUsers{
     data class SetErroDispay(val error : Boolean): ResultUsers()
 }
 ```
+
+
+### 4.4 fun getUsersCoroutines()
+#### Função que é chamada na thread principal e testa se a resposta da api passando pelo repositorio for correta o valor é atribuido ao live Data usersMutableLiveData
+#### Caso o valor retorne uma exception o valor atribuido vai para a função de erro .
+ fun getUsersCoroutines(){
+        viewModelScope.launch(Dispatchers.Main)
+        {
+            try {
+                val response = repository.getUsersRemoteDataSource()
+                usersMutableLiveData.value = ResultUsers.AddUsers(response)
+
+            }catch(exception:Exception){
+                usersMutableLiveData.value = ResultUsers.SetErroDispay(error = true)
+            }
+        }
+    }
+
 
    
 ### 4.9 UserViewModelFactory
@@ -241,8 +245,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 }
 
 ```
-#### função
+
 ### 5.1 recyclerViewConfig()
+#### Função para configurar a recyclerView 
   ```kotlin
   private fun recyclerViewConfig(){
         recyclerView = findViewById(R.id.recyclerView)
@@ -253,6 +258,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
   ```
 ### 5.2 progressBarConfig()
+#### Função para configurar a progressBar
  ```kotlin
   private fun progressBarConfig(){
         progressBar = findViewById(R.id.user_list_progress_bar)     
@@ -280,6 +286,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
   ```
 ### 5.5 fun addUsers
+#### Função 
  ```kotlin
  private fun addUsers(usersAdd: List<User>) {
         progressBar.visibility = View.GONE
@@ -288,6 +295,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 ```
  
 ### 5.6 fun setErroDispay
+#### Função para configurar a progressBar
  ```kotlin
  
    private fun setErroDispay() {
