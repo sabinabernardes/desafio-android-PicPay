@@ -385,6 +385,41 @@ class UserViewModelTest {
 }
 ```
 
+### 6.1 Teste para retornar um usuario da Api
+```kotlin
+@Test
+    fun `test must get a user`() {
+        suspend fun testUserResponseApi() = runBlocking {
+
+            val userA: List<User> =
+                listOf(User(img = "", name = "name", id = 1, username = "username"))
+
+            val users = MutableLiveData<ResultUsers>()
+
+            viewModel.getUsersCoroutines()
+
+            doReturn(userA)
+                .`when`(repository).getUsersRemoteDataSource()
+
+            assertEquals(
+                "Test", userA, users.value
+            )
+        }
+    }
+
+```
+### 6.2 Logica Empregada
+
+##### * Teste deve retornar UserA da Api
+##### * Mock UserA
+##### * Retorna verdadeiro quando UserA é igual a val users(MutableLiveData)
+
+### 6.2 Desafios e dificuldades
+##### * testar coroutines
+##### * saber que um teste esta com boas praticas
+
+##### Pergunta o que torna um teste unitário um bom teste?
+##### Qual a diferença para testes unitarios no processo de criação de um app?
 
 ### 7 Conclusão
 
