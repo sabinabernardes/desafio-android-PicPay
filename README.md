@@ -138,13 +138,17 @@ class UserRepositoryImplementation : UserRepository {
 ``
 :ViewModel()
 ``
-#### 4.2
+
 ### 4.2 LiveData
 #### Dados que vao receber as informações da resposta da api ou do db e quando houver alterções enviam para o componente de view que estará observando o conforme o ciclo de vida da Activity
-#### Para utiliza-los nessaria a biblioteca lifecycle.
 
+#### Para utiliza-los nessaria a biblioteca lifecycle. Localizada no build.gradle(Module)
 
+`` implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version" 
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version" ``
 
+##### Pergunta: Eu pude verificar que no build.gradle há varias biblioteca implemetadas porem nem todas sao utilizadas. Seria uma boa prática limpar essa bibliotecas? Isso ajuda de alguma forma no desempenho do aplicativo ?
 
 #### Neste caso foi usado um MutableLiveData uma lista mutável que retornará o tipo ResultUsers 
  ```kotlin
