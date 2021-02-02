@@ -13,6 +13,8 @@ https://developer.android.com/jetpack/guide
 ##### -> Classe User  foi para o package data/model
 ##### -> Interface PicPayService foi para o package data/service
 
+![](https://github.com/sabinabernardes/desafio-android-PicPay/blob/main/packages.png)
+
 ##### OBS: Os outros items iriam para classe de view, porem durante os testes quando eu movia para o package view o aplicativo não inicializava.
 ##### Pergunta: Há algum procedimento especial para fazer a transferência de arquivos para que esse erro não ocorra?
 
