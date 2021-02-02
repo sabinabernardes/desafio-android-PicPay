@@ -82,9 +82,9 @@ class UserRepositoryImplementation : UserRepository {
 ```
 #### Conceitos Utilizados :
 ##### 3.2.1 Coroutines:
-  * São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
-  * Pode substituir o Callback
-  * Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
+ ###### * São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
+ ###### * Pode substituir o Callback
+ ###### * Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
    
    
 ##### 3.2.2 Dispatchers.IO: Indicação de Threads secundaria 
@@ -139,7 +139,12 @@ class UserRepositoryImplementation : UserRepository {
 :ViewModel()
 ``
 ### 4.2 LiveData
-#### Dados que vao receber as informações da resposta da api ou do db e quando houver alterções enviam para o componente de view que estará observando o 
+#### Dados que vao receber as informações da resposta da api ou do db e quando houver alterções enviam para o componente de view que estará observando o conforme o ciclo de vida da Activity
+#### Para utiliza-los nessaria a biblioteca lifecycle.
+
+
+
+
 #### Neste caso foi usado um MutableLiveData uma lista mutável que retornará o tipo ResultUsers 
  ```kotlin
  val usersMutableLiveData = MutableLiveData<ResultUsers>()
@@ -160,6 +165,8 @@ sealed class ResultUsers{
 ### 4.4 fun getUsersCoroutines()
 #### Função que é chamada na thread principal e testa se a resposta da api passando pelo repositorio for correta o valor é atribuido ao live Data usersMutableLiveData
 #### Caso o valor retorne uma exception o valor atribuido vai para a função de erro .
+
+```kotlin
  fun getUsersCoroutines(){
         viewModelScope.launch(Dispatchers.Main)
         {
@@ -172,10 +179,11 @@ sealed class ResultUsers{
             }
         }
     }
-
+```
 
    
-### 4.9 UserViewModelFactory
+### 4.5 UserViewModelFactory
+#### 
 
 ```kotlin
 class UserViewModelFactory(
@@ -190,6 +198,9 @@ class UserViewModelFactory(
 
 
 ### 5 MainActivity(View)
+
+#### Classe que possui as configurações de view 
+
 ```kotlin
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -267,6 +278,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
    ```
    
 ### 5.3 viewModelProvider
+#### variavel 
  ```kotlin
  val viewModel = ViewModelProvider(this,
             UserViewModel.UserViewModelFactory(UserRepositoryImplementation())) //
@@ -274,6 +286,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
  ```
  
 ### 5.4 viewModelObservable
+#### Observa as alterações do usersMultableLiveData da classe viewModel notifica o adapter
+#### Quando a resposta do 
  ```kotlin
   viewModel.usersMutableLiveData.observe(this, Observer { users ->
             users?.let {
