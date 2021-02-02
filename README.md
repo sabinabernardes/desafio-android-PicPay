@@ -69,7 +69,8 @@ interface UserRepository
 ### 3.2 Classe UserRepositoryImplementation
 #### Classe que herda do UserRepository. E implementa a função getUserRemoteDataSource() utilizando o conceito de coroutines , ou seja , requerindo os usuarios da api em uma thread secundaria .
 
-``class UserRepositoryImplementation : UserRepository {
+```kotlin
+class UserRepositoryImplementation : UserRepository {
 
     override suspend fun getUsersRemoteDataSource() =
         withContext(Dispatchers.IO) {
@@ -77,7 +78,7 @@ interface UserRepository
         }
 
 }
-``
+```
 #### Conceitos Utilizados :
 ##### 3.2.1 Coroutines: São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
 Pode substituir o Callback
@@ -93,9 +94,10 @@ Gerenciamento de threads de background
 ### 3.3 PicPayService 
 #### Troca do tipo de retorno da função de Call<List<User>> para List<User> com o objetivo ce facilitar a leitura do usuarios no adapter .
  
- ``@GET("users")
+ ```kotlin
+ @GET("users")
     suspend fun getUsers(): List<User>
- ``
+ ```
 ##### Obs : Tive certa dificuldade em utilizar a metodologia do observais tanto no 
 
 ### 4 UserViewModel
@@ -106,7 +108,9 @@ Gerenciamento de threads de background
 :ViewModel()
 ``
 ### 4.2 MutableLiveData
- ``val usersMutableLiveData = MutableLiveData<ResultUsers>()``
+ ```kotlin
+ val usersMutableLiveData = MutableLiveData<ResultUsers>()
+ ```
  
 ### 4.3 função coroutines
 ### 4.5 chamada do repositor
@@ -114,7 +118,8 @@ Gerenciamento de threads de background
 ### 4.7 try catch
 ### 4.8 Classe ResultUsers
 
-``fun getUsersCoroutines(){
+```kotlin
+fun getUsersCoroutines(){
         viewModelScope.launch(Dispatchers.Main)
         {
             try {
@@ -126,9 +131,11 @@ Gerenciamento de threads de background
             }
         }
     }
- ``   
+ ```   
 ### 4.9 UserViewModelFactory
-``class UserViewModelFactory(
+
+```kotlin
+class UserViewModelFactory(
         private val repository: UserRepositoryImplementation
     ):ViewModelProvider.Factory{
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -136,9 +143,11 @@ Gerenciamento de threads de background
         }
 
     }
- ``
+ ```
 ### 4 Classe UserViewModel Completa
- ``class UserViewModel(private val repository: UserRepository) :ViewModel() {
+
+ ```kotlin
+ class UserViewModel(private val repository: UserRepository) :ViewModel() {
 
     val usersMutableLiveData = MutableLiveData<ResultUsers>()
 
@@ -162,9 +171,10 @@ Gerenciamento de threads de background
         }
 
     }
-   `` 
+   ``` 
 ### 5 MainActivity(View)
-``class MainActivity : AppCompatActivity(R.layout.activity_main) {
+```kotlin
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -218,7 +228,7 @@ Gerenciamento de threads de background
 
 }
 
-``
+```
 #### função
 ### 5.1 recyclerViewConfig()
 ### 5.2 progressBarConfig()
