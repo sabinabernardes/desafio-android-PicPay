@@ -133,11 +133,12 @@ class UserRepositoryImplementation : UserRepository {
 
     }
    ``` 
-### 4.1 Herda da classe ViewModel ()
+### 4.1 Herda da classe ViewModel () 
 #### Trás as caracteristicas necessarias para funcionar como viewModel
 ``
 :ViewModel()
 ``
+#### 4.2
 ### 4.2 LiveData
 #### Dados que vao receber as informações da resposta da api ou do db e quando houver alterções enviam para o componente de view que estará observando o conforme o ciclo de vida da Activity
 #### Para utiliza-los nessaria a biblioteca lifecycle.
@@ -183,7 +184,7 @@ sealed class ResultUsers{
 
    
 ### 4.5 UserViewModelFactory
-#### 
+####  
 
 ```kotlin
 class UserViewModelFactory(
@@ -278,7 +279,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
    ```
    
 ### 5.3 viewModelProvider
-#### variavel 
+#### variavel que instancia o viewModel referente a esta Activity
+
  ```kotlin
  val viewModel = ViewModelProvider(this,
             UserViewModel.UserViewModelFactory(UserRepositoryImplementation())) //
@@ -287,7 +289,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
  
 ### 5.4 viewModelObservable
 #### Observa as alterações do usersMultableLiveData da classe viewModel notifica o adapter
-#### Quando a resposta do 
+#### Quando a resposta do ResultUsers é para adicionar os usuarios chama a função addUsers
+#### Já quando a resposta de ResultUsers vem com erro chama a função de erro 
  ```kotlin
   viewModel.usersMutableLiveData.observe(this, Observer { users ->
             users?.let {
@@ -300,7 +303,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
   ```
 ### 5.5 fun addUsers
-#### Função 
+#### Função que passa a lista de usuarios para dentro do adapter 
  ```kotlin
  private fun addUsers(usersAdd: List<User>) {
         progressBar.visibility = View.GONE
