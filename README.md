@@ -334,10 +334,56 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 ```
 
 
-### 6 Teste Unitários 
+### 6 Teste Unitários -Teste de funcionamento de funções da viewModel
 
 #### Parte que eu tive mais dificuldade em executar 
 
+ ```kotlin
+ 
+@RunWith(MockitoJUnitRunner::class)
+
+class UserViewModelTest {
+    @get:Rule
+    var rule: TestRule = InstantTaskExecutorRule()
+
+    private lateinit var viewModel: UserViewModel
+
+    @Mock
+    lateinit var repository: UserRepository
+
+    @Before
+    fun setup() {
+        viewModel = UserViewModel(repository)
+    }
+
+
+    @Test
+    fun plusOperationTest() {
+        assertEquals("Test", 4, 2 + 2)
+    }
+
+    @Test
+    fun `test must get a user`() {
+        suspend fun testUserResponseApi() = runBlocking {
+
+            val userA: List<User> =
+                listOf(User(img = "", name = "name", id = 1, username = "username"))
+
+            val users = MutableLiveData<ResultUsers>()
+
+            viewModel.getUsersCoroutines()
+
+            doReturn(userA)
+                .`when`(repository).getUsersRemoteDataSource()
+
+            assertEquals(
+                "Test", userA, users.value
+            )
+        }
+    }
+
+}
+```
 
 
 ### 7 Conclusão
