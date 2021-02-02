@@ -144,9 +144,9 @@ class UserRepositoryImplementation : UserRepository {
 
 #### Para utiliza-los nessaria a biblioteca lifecycle. Localizada no build.gradle(Module)
 
-`` implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version" 
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version" ``
+#####  `` implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version" ``
+#####  ``implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version" ``
+#####  ``implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version" ``
 
 ##### Pergunta: Eu pude verificar que no build.gradle há varias biblioteca implemetadas porem nem todas sao utilizadas. Seria uma boa prática limpar essa bibliotecas? Isso ajuda de alguma forma no desempenho do aplicativo ?
 
@@ -156,7 +156,7 @@ class UserRepositoryImplementation : UserRepository {
  ```
 ### 4.3 Classe ResultUsers
 
-#### Classe selada 
+#### Classe selada (Classe fechada ), que dependendo do valor que é recebido passa para o viewModel uma lista de usuários .A vantagem de trabalhar com uma classe selada e nao precisar validar com if
 ```kotlin
 sealed class ResultUsers{
 
@@ -188,7 +188,7 @@ sealed class ResultUsers{
 
    
 ### 4.5 UserViewModelFactory
-####  
+####  Cria uma nova instancia do viewModel e passa para o repositorio 
 
 ```kotlin
 class UserViewModelFactory(
@@ -200,8 +200,12 @@ class UserViewModelFactory(
 
     }
  ```
+#### a variavel repositorio foi declarada atraves do conceito de injeção de dependencias  como mostrado abaixo 
 
-
+```kotlin
+class UserViewModel(private val repository: UserRepository)
+ ```
+ 
 ### 5 MainActivity(View)
 
 #### Classe que possui as configurações de view 
