@@ -19,7 +19,8 @@ https://developer.android.com/jetpack/guide
 ### 2- Classe Remote Data Source
 #### Criada a classe RemoteDataSource no package data/service com o objetivo de retirar a chamada da api da MainActivity 
 
- `class RemoteDataSource {
+ ```kotlin
+ class RemoteDataSource {
  
     private val url = "http://careers.picpay.com/tests/mobdev/"
     private val gson: Gson by lazy { GsonBuilder().create() }
@@ -41,8 +42,10 @@ https://developer.android.com/jetpack/guide
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     } }
+    
+```
  
-`
+
 
 
 ### 3- Repository
@@ -51,10 +54,12 @@ https://developer.android.com/jetpack/guide
 ### 3.1 - Interface UserRepository
 #### função getUserRemoteDataSource(Solicita os usuarios para a api ) do tipo Lista de Usuários 
 
-`interface UserRepository 
-{
+```kotlin
+interface UserRepository 
+{ 
     suspend fun getUsersRemoteDataSource() : List<User>
-}`
+}
+```
 
 
 
