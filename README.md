@@ -332,8 +332,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
     
 ```
- 
+
+
 ### 6 Teste Unitários 
+
+#### Parte que eu tive mais dificuldade em executar 
+
+
+
+### 7 Conclusão
+
+#### Este projeto foi um grande desafio para mim que trouxe varios aprendizados 
+##### * Aplicação e fixação de conceito do MVVM
+##### * LiveData 
+##### * Coroutines
+##### * Retrofit (ver uma aplicação) 
+##### * Aprimorar o dominio de Kotlin
+##### * Desafio de refatorar um código 
 
 
 
