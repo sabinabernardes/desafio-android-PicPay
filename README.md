@@ -82,13 +82,14 @@ class UserRepositoryImplementation : UserRepository {
 }
 ```
 #### Conceitos Utilizados :
-##### 3.2.1 Coroutines: São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
-Pode substituir o Callback
-Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
-Gerenciamento de threads de background 
+##### 3.2.1 Coroutines:
+  São chamados de threads leves e tem o objetivo de de não bloquear a thread principal . 
+   ##### 3.2.1.1 Pode substituir o Callback
+   ##### 3.2.1.2 Há a possibilidade de escrever códigos assíncronos de maneira sequencial mantendo o código mais simples
+   ##### 3.2.1.3 Gerenciamento de threads de background 
+   
 ##### 3.2.2 Dispatchers.IO:
 ##### 3.2.3 Threads:
-*** Recebe o repositor já construído via injeção de dependências 
 ##### 3.2.4 viewModelScope : escopo de coroutines na camada
 
 #### Pergunta : O nome da função getUserRemoteDataSource seria um nome valído para um projeto , onde esse código seria revisado por outros , ou seja , seria um ideal , ou há outras maneiras de nomeação na hora da aplicação em projeto .
@@ -103,50 +104,7 @@ Gerenciamento de threads de background
 ##### Obs : Tive certa dificuldade em utilizar a metodologia do observais tanto no 
 
 ### 4 UserViewModel
-#### fornece os dados para um componente de IU específico, como um fragmento ou atividade, e contém lógica de negócios de manipulação de dados para se comunicar com o modelo.
-
-### 4.1 Herda da classe ViewModel ()
-``
-:ViewModel()
-``
-### 4.2 MutableLiveData
- ```kotlin
- val usersMutableLiveData = MutableLiveData<ResultUsers>()
- ```
- 
-### 4.3 função coroutines
-### 4.5 chamada do repositor
-### 4.6 viewModelScope.lauch.Main
-### 4.7 try catch
-### 4.8 Classe ResultUsers
-
-```kotlin
-fun getUsersCoroutines(){
-        viewModelScope.launch(Dispatchers.Main)
-        {
-            try {
-                val response = repository.getUsersRemoteDataSource()
-                usersMutableLiveData.value = ResultUsers.AddUsers(response)
-
-            }catch(exception:Exception){
-                usersMutableLiveData.value = ResultUsers.SetErroDispay(error = true)
-            }
-        }
-    }
- ```   
-### 4.9 UserViewModelFactory
-
-```kotlin
-class UserViewModelFactory(
-        private val repository: UserRepositoryImplementation
-    ):ViewModelProvider.Factory{
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return UserViewModel(repository) as T
-        }
-
-    }
- ```
-### 4 Classe UserViewModel Completa
+#### Fornece os dados para um componente de UI, como a MainActivity, e contém lógica de negócios de manipulação de dados para se comunicar com o repository
 
  ```kotlin
  class UserViewModel(private val repository: UserRepository) :ViewModel() {
@@ -174,6 +132,59 @@ class UserViewModelFactory(
 
     }
    ``` 
+### 4.1 Herda da classe ViewModel ()
+``
+:ViewModel()
+``
+### 4.2 MutableLiveData
+ ```kotlin
+ val usersMutableLiveData = MutableLiveData<ResultUsers>()
+ ```
+ 
+### 4.3 função coroutines
+```kotlin
+fun getUsersCoroutines(){
+        viewModelScope.launch(Dispatchers.Main)
+        {
+        
+```
+### 4.5 chamada do repository
+
+### 4.7 try catch
+ ```kotlin
+ try {
+                val response = repository.getUsersRemoteDataSource()
+                usersMutableLiveData.value = ResultUsers.AddUsers(response)
+
+            }catch(exception:Exception){
+                usersMutableLiveData.value = ResultUsers.SetErroDispay(error = true)
+            }
+```
+### 4.8 Classe ResultUsers
+```kotlin
+sealed class ResultUsers{
+
+
+    data class AddUsers(val resultUserList: List<User>): ResultUsers()
+    data class SetErroDispay(val error : Boolean): ResultUsers()
+}
+```
+
+   
+### 4.9 UserViewModelFactory
+
+```kotlin
+class UserViewModelFactory(
+        private val repository: UserRepositoryImplementation
+    ):ViewModelProvider.Factory{
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return UserViewModel(repository) as T
+        }
+
+    }
+ ```
+
+
 ### 5 MainActivity(View)
 ```kotlin
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -212,8 +223,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     }
     private fun progressBarConfig(){
-        progressBar = findViewById(R.id.user_list_progress_bar)
-        //val progressBar:ProgressBar =itemView.user_list_progress_bar
+        progressBar = findViewById(R.id.user_list_progress_bar)     
         progressBar.visibility = View.VISIBLE
     }
     private fun addUsers(usersAdd: List<User>) {
@@ -233,11 +243,63 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 ```
 #### função
 ### 5.1 recyclerViewConfig()
+  ```kotlin
+  private fun recyclerViewConfig(){
+        recyclerView = findViewById(R.id.recyclerView)
+        adapter = UserListAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+    }
+  ```
 ### 5.2 progressBarConfig()
+ ```kotlin
+  private fun progressBarConfig(){
+        progressBar = findViewById(R.id.user_list_progress_bar)     
+        progressBar.visibility = View.VISIBLE
+    }
+   ```
+   
 ### 5.3 viewModelProvider
+ ```kotlin
+ val viewModel = ViewModelProvider(this,
+            UserViewModel.UserViewModelFactory(UserRepositoryImplementation())) //
+            .get(UserViewModel::class.java)
+ ```
+ 
 ### 5.4 viewModelObservable
+ ```kotlin
+  viewModel.usersMutableLiveData.observe(this, Observer { users ->
+            users?.let {
+                adapter.notifyDataSetChanged()
+                when (it) {
+                    is ResultUsers.AddUsers -> addUsers(it.resultUserList)
+                    is ResultUsers.SetErroDispay-> setErroDispay()
+
+                }
+            }
+  ```
 ### 5.5 fun addUsers
+ ```kotlin
+ private fun addUsers(usersAdd: List<User>) {
+        progressBar.visibility = View.GONE
+        adapter.users = usersAdd
+    }
+```
+ 
 ### 5.6 fun setErroDispay
+ ```kotlin
+ 
+   private fun setErroDispay() {
+        progressBar.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+
+        Toast.makeText(this@MainActivity, getString(R.string.error), Toast.LENGTH_SHORT)
+            .show()
+    }
+    
+```
+ 
 ### 6 Teste Unitários 
 
 
